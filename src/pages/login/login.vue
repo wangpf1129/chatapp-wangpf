@@ -42,14 +42,22 @@
 			}
 		},
 		onLoad: function(e) {
-			if(e.user){
+			if (e.user) {
 				this.user = e.user
-			}else if(e.name){
+			} else if (e.name) {
 				this.user = e.name
 				uni.showModal({
-				    title: '登录过期',
-				    content: '请重登录',
-					showCancel:false
+					title: '登录过期',
+					content: '请重新登录',
+					showCancel: false
+				});
+			}
+			else if (e.cgpwd) {
+				this.user = e.cgpwd
+				uni.showModal({
+					title: '密码修改成功',
+					content: '请重新登录',
+					showCancel: false
 				});
 			}
 		},
@@ -82,28 +90,28 @@
 									'id': result.id,
 									'userName': result.userName,
 									'imgUrl': result.imgUrl,
-									'token': result.token
+									'token': result.token,
 								});
 							} catch (error) {
 								console.log('数据存储出错:' + error)
 							}
 							uni.showLoading({
-							    title: '登录中....'
+								title: '登录中....'
 							});
-							
-							setTimeout(function () {
-							    uni.hideLoading();
+
+							setTimeout(function() {
+								uni.hideLoading();
 								uni.navigateTo({
-									url: '../index/index'
+									url: '../index/index',
 								})
 							}, 1000);
-							
+
 						} else if (status === 400) {
-								uni.showModal({
-								    title: '登录失败',
-								    content: '账号或密码错误，请重新输入。',
-									showCancel:false
-								});
+							uni.showModal({
+								title: '登录失败',
+								content: '账号或密码错误，请重新输入。',
+								showCancel: false
+							});
 							this.password = ''
 						} else if (status === 500) {
 							uni.showToast({
@@ -118,9 +126,10 @@
 			// 测试token
 			testToken: function() {
 				uni.request({
-					url: "http://192.168.1.107:3000/search/user",
+					url: "http://192.168.1.107:3000/friend/updateFriendState",
 					data: {
-						data: '小张'
+						uID: '5ffd3c0cca0c7244e0063d2f',
+						fID:'5ff2af82425e1833240defc4'
 						// token :this.token
 					},
 					method: 'POST',
@@ -184,7 +193,7 @@
 				}
 			}
 
-			
+
 		}
 
 		.submit {

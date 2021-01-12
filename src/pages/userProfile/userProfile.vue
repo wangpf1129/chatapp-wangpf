@@ -93,7 +93,6 @@
 	},
     methods: {
 		// 获取缓存信息
-	
 		getStorages: function() {
 			try {
 				const value = uni.getStorageSync('user');
@@ -131,7 +130,7 @@
 						// 处理头像链接
 						result.imgUrl = this.serverUrl + '/user/' + result.imgUrl
 						// 处理简介
-						if(typeof(result.explain)){
+						if(result.explain == ''){
 							result.explain = '这个人很懒，什么都没有留下...'
 						}
 						// 处理markName

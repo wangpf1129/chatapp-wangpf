@@ -6,7 +6,8 @@
 			// 首页
 			"path": "pages/index/index",
 			"style": {
-				"navigationStyle": "custom"
+				"navigationStyle": "custom",
+				"enablePullDownRefresh": true
 			}
 		},
 		{
@@ -48,13 +49,21 @@
 				"navigationStyle": "custom"
 			}
 
-		}
-	    ,{
+		},
+		{
             "path" : "pages/test/test",
             "style" :                                                                                    
             {
                 "navigationBarTitleText": "",
                 "enablePullDownRefresh": false
+            }
+            
+        },
+		{	// 聊天室页面
+            "path" : "pages/chatRoom/chatRoom",
+            "style" :                                                                                    
+            {
+                "navigationStyle": "custom"
             }
             
         }

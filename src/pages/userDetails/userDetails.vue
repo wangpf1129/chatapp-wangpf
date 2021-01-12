@@ -10,16 +10,16 @@
 			<view class="main">
 				<view class="column heads">
 					<view class="row head">
-						<view class="title" >头像</view>
-						<view class="cont first-cont"  >
+						<view class="title">头像</view>
+						<view class="cont first-cont">
 							<view v-if='ID === uID'>
 								<image-cropper :src="tempFilePath" @confirm="confirm" @cancel="cancel"></image-cropper>
 								<image :src="cropFilePath" @tap="upload" class="user-img"></image>
 								<canvas id="myCanvas" canvas-id="myCanvas" class="meslist_canvas" crop-width="200" crop-height="200"></canvas>
 							</view>
 							<image :src="cropFilePath" class="user-img friendImg" v-if='ID !== uID'></image>
-						</view>		
-						<view class="more"  v-if='ID === uID'>
+						</view>
+						<view class="more" v-if='ID === uID'>
 							<image src="~@/static/images/userDetails/more.png" mode="aspectFill"></image>
 						</view>
 					</view>
@@ -30,11 +30,11 @@
 								{{user.explain}}
 							</span>
 						</view>
-						<view class="more" >
+						<view class="more">
 							<image src="~@/static/images/userDetails/more.png" mode="aspectFill"></image>
 						</view>
 					</view>
-					<view class="row" v-if="ID !== uID" >
+					<view class="row" v-if="ID !== uID">
 						<view class="title">个性签名</view>
 						<view class="cont">
 							<span>
@@ -96,13 +96,7 @@
 						<view class="title">生日</view>
 						<view class="cont">
 							<span>
-								<picker 
-								mode="date" 
-								:value="date" 
-								:start="startDate" 
-								:end="endDate" 
-								@change="bindDateChange"
-								v-if="ID === uID">
+								<picker mode="date" :value="date" :start="startDate" :end="endDate" @change="bindDateChange" v-if="ID === uID">
 									<view class="uni-input">{{date}}</view>
 								</picker>
 								<view class="uni-input" v-if="ID !== uID">{{date}}</view>
@@ -123,7 +117,7 @@
 							<image src="~@/static/images/userDetails/more.png" mode="aspectFill"></image>
 						</view>
 					</view>
-					<view class="row"  v-if="ID !== uID">
+					<view class="row" v-if="ID !== uID">
 						<view class="title">电话</view>
 						<view class="cont">
 							<span>
@@ -132,8 +126,8 @@
 						</view>
 					</view>
 				</view>
-				<view class="column" v-if="ID === uID" >
-					<view class="row" @tap="modifyfBox('password','密码',user.password)" >
+				<view class="column" v-if="ID === uID">
+					<view class="row" @tap="modifyfBox('password','密码','')">
 						<view class="title">密码</view>
 						<view class="cont">
 							<span>
@@ -145,8 +139,8 @@
 						</view>
 					</view>
 				</view>
-				<view class="bottomBtn" v-if="ID === uID">退出登录</view>
-				<view class="bottomBtn" v-if="ID !== uID">删除好友</view>
+				<view class="bottomBtn" v-if="ID === uID" @tap='quitSigin'>退出登录</view>
+				<view class="bottomBtn" v-if="ID !== uID" @tap='deleteFriend'>删除好友</view>
 			</view>
 			<view class="modify" :style="{bottom: - + modiyfBoxHeight +'px'}" :animation="animationModifyBox">
 				<view class="modify-header">
@@ -456,20 +450,33 @@
 					success: (data) => {
 						// console.log(data)
 						let status = data.data.status
+					
 						// 访问后端成功
-						console.log(status)
 						if (status === 200) {
 							uni.showToast({
-								title: '更改成功！',
+								title: '修改成功！',
 								icon: 'none',
 								duration: 1500
 							})
+							if(type === 'password'){
+								// 清除缓存
+								uni.removeStorage({
+									key:'user',
+									success:function(res){
+										console.log(res)
+									}
+								})
+								// 用户需要重新登录
+								uni.navigateTo({
+									url: '../login/login?cgpwd=' + this.myName
+								})
+							}
 						} else if (status === 400) {
-							uni.showToast({
-								title: '原密码错误!!!',
-								icon: 'none',
-								duration: 1500
-							})
+							uni.showModal({
+							    title: '密码错误',
+							    content: '原始密码错误，请重新输入！',
+								showCancel:false
+							});
 						}else if (status === 500) {
 							uni.showToast({
 								title: '服务器出错了！',
@@ -528,6 +535,7 @@
 						this.user[this.type] = this.modifyData
 					}
 				}
+				// 访问成功后关闭弹出框
 				this.modifyfBox()
 			},
 			updateFriendName:function(){
@@ -552,7 +560,12 @@
 									icon: 'none',
 									duration: 1500
 								})
-							}
+							}else if(status === 300){
+							// token 过期了 需要重新登录再次生成token
+							uni.navigateTo({
+								url: '../login/login?name=' + this.myName
+							});
+						}
 						}
 					})
 				}
@@ -561,6 +574,70 @@
 			showTime: function (date) {
 			  return myfun.detailTime(date);
 			},
+			deleteFriend:function(){
+				uni.showModal({
+				    content: '确定要删除该好友吗？',
+					cancelColor:'#000000',
+					confirmColor:'#dd5246',
+				    success:  (res) => {
+				        if (res.confirm) {
+				       uni.request({
+				       	url: this.serverUrl + "/friend/deleteFriend",
+				       	data: {
+				       		uID:this.uID,
+				       		fID: this.ID,
+				       		token:this.token
+				       	},
+				       	method: 'POST',
+				       	success: (data) => {
+				       		let status = data.data.status
+				       		// 访问后端成功
+				       		if (status === 200) {
+				       			let result = data.data.result
+								uni.navigateTo({
+									url: '../index/index'
+								});
+				       		} else if (status === 500) {
+				       			uni.showToast({
+				       				title: '服务器出错了！',
+				       				icon: 'none',
+				       				duration: 1500
+				       			})
+				       		}else if(status === 300){
+							// token 过期了 需要重新登录再次生成token
+							uni.navigateTo({
+								url: '../login/login?name=' + this.myName
+							});
+						} 
+							
+				       	}
+				       })
+				        } 
+				    }
+				});		
+			},
+			quitSigin:function(){
+				uni.showModal({
+				    content: '退出登录可能会使你接收不到信息，确定退出？',
+					cancelColor:'#000000',
+					confirmColor:'#dd5246',
+				    success: function (res) {
+				        if (res.confirm) {
+				          // 清除缓存
+				          uni.removeStorage({
+				          	key:'user',
+				          	success:function(res){
+				          		console.log(res)
+				          	}
+				          })
+				          // 用户需要重新登录
+				          uni.navigateTo({
+				          	url: '../login/login'
+				          })
+				        } 
+				    }
+				});				
+			}
 		}
 	}
 	
