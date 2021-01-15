@@ -20,7 +20,7 @@
 <style lang="scss" scoped>
 	.bottom-bar {
 		position: fixed;
-		bottom: 20rpx;
+		bottom: 40rpx;
 		width: 100%;
 		height: 104rpx;
 
@@ -29,7 +29,7 @@
 			left: 0;
 			right: 0;
 			top: 0;
-			bottom: 0;
+			bottom: env(safe-area-inset-bottom);
 			margin: auto;
 			width: 684rpx;
 			height: 80rpx;

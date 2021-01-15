@@ -274,6 +274,7 @@
 
 <style lang="scss" scoped>
 	#search {
+		padding-top: var(--status-bar-height);
 		.top-bar {
 			position: fixed;
 			top: 0;

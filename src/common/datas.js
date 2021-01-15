@@ -1,7 +1,8 @@
 export default {
 	// 用户
 	users: function() {
-		let friendsData = [{
+		let friendsData = [
+			{
 				id: 1,
 				tips: 1,
 				imgUrl: 'one.jpeg',
@@ -80,7 +81,58 @@ export default {
 
 	// 聊天信息
 	message: function() {
-		let msgs = [{
+		let msgs = [
+			{
+				id: 'b', //用户id
+				imgUrl: 'two.jpeg',
+				message: {
+					name:'襄城县公安局',
+					address:'河南省许昌市襄城县县旅游局旁正西方向130米',
+					latitude:'33.850987',
+					longitude:'113.505373'
+				},
+				types: 3, // 内容类型 （0文字，1图片链接，2音频链接，3位置链接）
+				time: new Date() - 500, // 发送时间
+				tip: 18
+			},
+			{
+				id: 'a', //用户id
+				imgUrl: 'one.jpeg',
+				message: {
+					name:'襄城县政府',
+					address:'河南省许昌市襄城县茨沟乡烟城路',
+					latitude:'33.85072',
+					longitude:'113.50669'
+				},
+				types: 3, // 内容类型 （0文字，1图片链接，2音频链接，3位置链接）
+				time: new Date() - 600, // 发送时间
+				tip: 1
+			},
+			{
+				id: 'a', //用户id
+				imgUrl: 'one.jpeg',
+				message: {
+					voice:'aa',
+					time:2
+				},
+				types: 2, // 内容类型 （0文字，1图片链接，2音频链接，3位置链接）
+				time: new Date() - 700, // 发送时间
+				tip: 15
+			
+			},
+			{
+				id: 'b', //用户id
+				imgUrl: 'two.jpeg',
+				message: {
+					voice:'bb',
+					time:60
+				},
+				types: 2, // 内容类型 （0文字，1图片链接，2音频链接，3位置链接）
+				time: new Date() - 800, // 发送时间
+				tip: 17
+			
+			},
+			{
 				id: 'a', //用户id
 				imgUrl: 'one.jpeg',
 				message: '拜拜~~~',

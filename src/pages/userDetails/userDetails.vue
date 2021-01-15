@@ -429,7 +429,6 @@
 					},
 				});
 
-				// #endif
 			},
 			cancel:function() {
 				console.log("canceled");
@@ -645,6 +644,7 @@
 
 <style scoped lang="scss">
 	#userDetails {
+		padding-top: var(--status-bar-height);
 		.top-bar {
 			background: rgba(255, 255, 255, 0.96);
 			border-bottom: 1px solid $uni-border-color;

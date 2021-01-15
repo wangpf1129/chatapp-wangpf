@@ -41,7 +41,7 @@
 				<view class="no-title">你还没有好友呢~</view>
 				<view class="search-btn" @tap="toSearch">搜索好友</view>
 			</view>
-			<view class="friends" v-if="friendsData.length > 0">
+			<view class="friends" v-if="friendsData.length > 0"  @tap='toChatRomm'>
 				<view class="friends-list" v-for="item in friendsData" :key="item.id">
 					<view class="friends-list-l">
 						<text class="tips" v-if="item.tips>0">{{ item.tips }}</text>
@@ -359,7 +359,12 @@
 				uni.navigateTo({
 					url: '../friendRequest/friendRequest'
 				});
-			}
+			},
+			toChatRomm:function(){
+				uni.navigateTo({
+					url: '../chatRoom/chatRoom'
+				});
+			},
 
 		},
 	};
@@ -371,6 +376,7 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
+		padding-top: var(--status-bar-height);
 
 		.top-bar {
 			border-bottom: 1px solid $uni-border-color;

@@ -5,7 +5,7 @@
 				<image src="~@/static/images/common/back.png" mode=""></image>
 			</view>
 			<view slot="mid">再努力点</view>
-			<view slot="right" class="right" @click="toUserDeatils">
+			<view slot="right" class="right">
 				<view class="close">
 					<image src="../../static/images/test/two.jpeg" mode=""></image>
 				</view>
@@ -18,20 +18,46 @@
 						<view class="chat-time" v-if="item.time !== '' ">{{changeTime(item.time)}}</view>
 						<view class="msg-m  msg-left" v-if="item.id == 'a' ">
 							<image :src="item.imgUrl" class="user-img"></image>
+							<!-- 文字 -->
 							<view class="message" v-if="item.types === 0">
 								<view class="msg-text">{{item.message}}</view>
 							</view>
+							<!-- 图片 -->
 							<view class="message" v-if="item.types === 1">
 								<image :src="item.message" class="msg-img" mode="widthFix" @tap="previewImage(item.message)"></image>
+							</view>
+							<!-- 音频 -->
+							<view class="message" v-if="item.types === 2">
+								<view class="msg-text voice" 
+								:style="{width:item.message.time*4 + 'px'}"
+								@tap="playVoice(item.message.voice)">
+									<image src="../../static/images/chatRoom/voice.png" class="voice-img"></image>
+									{{item.message.time}}″
+								</view>
 							</view>
 						</view>
 						<view class="msg-m  msg-right" v-if="item.id == 'b' ">
 							<image :src="item.imgUrl" class="user-img"></image>
+							<!-- 文字 -->
 							<view class="message" v-if="item.types === 0">
 								<view class="msg-text">{{item.message}}</view>
 							</view>
+							<!-- 图片 -->
 							<view class="message" v-if="item.types === 1">
 								<image :src="item.message" class="msg-img" mode="widthFix" @tap="previewImage(item.message)"></image>
+							</view>
+							<!-- 音频 -->
+							<view class="message" v-if="item.types === 2">
+								<view class="msg-text voice" 
+								:style="{width:item.message.time*4 + 'px'}"
+								@tap="playVoice(item.message.voice)">
+									{{item.message.time}}″ 
+									<image src="../../static/images/chatRoom/voice.png" class="voice-img"></image>
+								</view>
+							</view>
+							<!-- 位置 -->
+							<view class="message" v-if="item.types === 3">
+								<view class="msg-text">{{item.message.name}}</view>
 							</view>
 						</view>
 					</view>
@@ -39,7 +65,7 @@
 			</scroll-view>
 		</view>
 		<chat-input-box @getInputContent="getInputContent" @getBoxHeight="getBoxHeight"></chat-input-box>
-		<view class="box"></view>
+		<!-- <view class="box"></view> -->
 	</view>
 </template>
 
@@ -49,7 +75,6 @@
 
 	import datas from '../../common/datas.js'
 	import myfun from '../../common/myfun.js'
-
 	export default {
 		components: {
 			topBar,
@@ -66,8 +91,16 @@
 		},
 		onLoad: function() {
 			this.getMessage()
+			this.getElementHeight()
 		},
 		methods: {
+			// 获取该组件的高度
+			getElementHeight:function(){
+				const query = uni.createSelectorQuery().in(this)
+				query.select('.chat').boundingClientRect(data => {
+					console.log(data)
+				}).exec()
+			},
 			// 返回首页面
 			backOne: function() {
 				uni.navigateBack({
@@ -106,6 +139,16 @@
 				})
 				console.log(this.messages)
 			},
+			// 播放录音
+			playVoice:function(e){
+				const innerAudioContext = uni.createInnerAudioContext();
+				innerAudioContext.autoplay = true;
+				innerAudioContext.src = e;
+				innerAudioContext.onPlay(() => {
+				  console.log('开始播放');
+				});
+			},
+			// 预览图片
 			previewImage: function(e) {
 				// 预览图片时  定位
 				let index = 0
@@ -131,13 +174,21 @@
 			},
 			// 获取输入的内容
 			getInputContent: function(e) {
+				// 处理时间间隔
+				let nowTime = new Date()
+				let interval = myfun.spaceTime(this.oldTime, nowTime)
+				if (interval) {
+					this.oldTime = interval
+				}
+				nowTime = interval
+				
 				let length = this.messages.length
 				let data = {
 				id: 'b', //用户id
 				imgUrl: '../../static/images/test/two.jpeg',
-				message: e,
-				types: 0, // 内容类型 （0文字，1图片链接，2音频链接，3位置链接）
-				time: new Date(), // 发送时间
+				message: e.message,
+				types: e.type, // 内容类型 （0文字，1图片链接，2音频链接，3位置链接）
+				time: nowTime, // 发送时间
 				tip: length
 
 				}
@@ -145,6 +196,9 @@
 				this.$nextTick(function() {
 					this.srcollToView = 'message' + length
 				})
+				if(e.type === 1){
+					this.imageMessage.push(e.message)
+				}
 			},
 			// 获取输入框高度
 			getBoxHeight: function(e) {
@@ -165,7 +219,7 @@
 	}
 </script>
 
-<style scoped lang="scss">
+<style scoped lang="scss" scoped>
 	page {
 		height: 100%;
 	}
@@ -173,12 +227,12 @@
 	;
 
 	.content {
-		height: 100vh;
+		height: 100%;
 		background: rgba(244, 244, 244, 1);
 
 		.box {
 			width: 100%;
-			height: var(--status-bar-height);
+			height: env(safe-area-inset-bottom);
 		}
 
 		.top-bar {
@@ -262,6 +316,16 @@
 						max-width: 400rpx;
 						border-radius: $uni-border-radius-base;
 					}
+					
+					.voice{
+						min-width: 100rpx;
+						max-width: 400rpx;
+					}
+					
+					.voice-img{
+						width: 28rpx;
+						height: 36rpx;
+					}
 				}
 
 				.msg-left {
@@ -274,6 +338,17 @@
 
 					.msg-img {
 						margin-left: 16rpx;
+					}
+					
+					.voice{
+						text-align: right;
+					}
+					
+					.voice-img{
+						padding-top: 4rpx;
+						float: left;
+						width: 28rpx;
+						height: 36rpx;
 					}
 				}
 
@@ -288,6 +363,18 @@
 
 					.msg-img {
 						margin-right: 16rpx;
+					}
+					
+					.voice{
+						text-align: left;
+					}
+					
+					.voice-img{
+						padding-bottom: 4rpx;
+						float: right;
+						transform: rotate(180deg);
+						width: 28rpx;
+						height: 36rpx;
 					}
 				}
 			}
