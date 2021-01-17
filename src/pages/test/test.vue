@@ -8,6 +8,8 @@
 </template>
 
 <script>
+	import myfun from '../../common/myfun.js'
+	
 	export default {
 		data() {
 			return {
@@ -17,6 +19,7 @@
 		},
 		methods: {
 			upload: function() {
+				let url = myfun.fileNmae(new Date())
 				uni.chooseImage({
 					count: 9, //默认9
 					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
@@ -25,16 +28,17 @@
 						const tempFilePaths = chooseImageRes.tempFilePaths;
 						for (let i = 0; i < tempFilePaths.length; i++) {
 							const uploadTask = uni.uploadFile({
-								url: 'http://192.168.1.107:3000/files/upload', //仅为示例，非真实的接口地址
+								url: this.serverUrl +'/files/upload', //仅为示例，非真实的接口地址
 								filePath: tempFilePaths[i],
 								name: 'file',
 								formData: {
-									url: 'user',
+									url: url,
 									name: this.id + new Date().getTime() + i,
 								},
 								success: (uploadFileRes) => {
-									let path = 'user/' + uploadFileRes.data
-									this.img.push(`http://192.168.1.107:3000/${path}`)
+									console.log(uploadFileRes)
+									let path = this.serverUrl + uploadFileRes.data
+									this.img.push(path)
 									// console.log(uploadFileRes.data);
 								}
 							});

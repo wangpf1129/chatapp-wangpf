@@ -29,9 +29,9 @@
 
 		</view>
 
-		<bottom-bar>
+		<bottom-bar v-if="relation !== 0">
 			<view slot="text" @tap="addFriendAnimation(myName+' 请求添加好友！')" v-if="relation === 2">加为好友</view>
-			<view slot="text" v-if="relation === 1">发消息</view>
+			<view slot="text" v-if="relation === 1" @tap="toChatRomm">发消息</view>
 		</bottom-bar>
 
 		<view class="add-req" :style="{height:addHeight+'px',bottom:-+addHeight+'px'}" :animation="animationContent">
@@ -128,7 +128,7 @@
 						let result = data.data.result
 						// console.log(result)
 						// 处理头像链接
-						result.imgUrl = this.serverUrl + '/user/' + result.imgUrl
+						result.imgUrl = this.serverUrl  + result.imgUrl  
 						// 处理简介
 						if(result.explain == ''){
 							result.explain = '这个人很懒，什么都没有留下...'
@@ -139,6 +139,7 @@
 						}
 						this.genderJudeg(result.gender)
 						this.user = result
+						console.log(this.user)
 					} else if (status === 500) {
 						uni.showToast({
 							title: '服务器出错了！',
@@ -332,6 +333,18 @@
 			toUserDeatils:function(){
 				uni.navigateTo({
 					url: '../userDetails/userDetails?id=' + this.ID
+				});
+			},
+			// 跳转聊天页面
+			toChatRomm:function(){
+				let name = this.user.userName
+				if(this.markName){
+					name = this.markName
+				}else{
+					name = this.user.userName
+				}	
+				uni.navigateTo({
+					url: `../chatRoom/chatRoom?id=${this.user._id}&name=${name}&img=${this.user.imgUrl}&type=${0}`
 				});
 			},
     },

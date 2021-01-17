@@ -150,7 +150,7 @@
 					friendType = -1 // 表示是自己
 					user.friendType = friendType
 					// 将头像也存起来
-					user.imgUrl = this.serverUrl + '/user/' + user.imgUrl;
+					user.imgUrl = this.serverUrl  + user.imgUrl;
 					// 利用正则将搜索到的内容的字体变个样式
 					user.userName = user.userName.replace(exp, `<span style="color:#4AAAFF">${user}</span>`)
 					user.email = user.email.replace(exp, `<span style="color:#4AAAFF">${user}</span>`)
@@ -184,7 +184,7 @@
 							}
 							user.friendType = friendType
 							// 将头像也存起来
-							user.imgUrl = this.serverUrl + '/user/' + user.imgUrl;
+							user.imgUrl = this.serverUrl  + user.imgUrl;
 							
 							// 利用正则将搜索到的内容的字体变个样式
 							user.userName = user.userName.replace(exp, `<span style="color:#4AAAFF">${user}</span>`)

@@ -112,7 +112,7 @@ export default {
 		now = new Date(now)
 		let oldTime = old.getTime()
 		let nowTime = now.getTime()
-		if(oldTime > (nowTime + 1000 * 60 * 5)){
+		if(nowTime > (oldTime + 1000 * 60 * 5)){
 			return now
 		}else{
 			return ''
@@ -166,6 +166,25 @@ export default {
 			D = '0' + D
 		}
 		return Y + '-' + M + '-' + D
+	},
+	
+	// 文件夹使用的时间（取名）
+	fileNmae(time) {
+		let old = new Date(time)
+		let now = new Date()
+		// 获得 传入参数的 时间
+		let D = old.getDate()
+		let M = old.getMonth() + 1
+		let Y = old.getFullYear()
+	
+		// 处理时间
+		if (M < 10) {
+			M = '0' + M
+		}
+		if (D < 10) {
+			D = '0' + D
+		}
+		return Y + M  + D
 	},
 
 	//搜索用户  （防抖节流）

@@ -99,7 +99,7 @@
 						if (status === 200) {
 							let result = data.data.result
 							for(let i =0;i<result.length;i++){
-								result[i].imgUrl  = this.serverUrl + '/user/' + result[i].imgUrl
+								result[i].imgUrl  = this.serverUrl  + result[i].imgUrl
 								this.friendLeaveMessage(result,i)
 							}
 							this.requestData = result

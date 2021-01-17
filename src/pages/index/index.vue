@@ -34,15 +34,15 @@
 						</view>
 						<view class="news">沧海茫茫，相聚便是缘。</view>
 					</view>
-				</view>
+				</view>  
 			</view>
 			<view class="noone" v-if="noone">
 				<image src="../../static/images/index/graffiti@2x.png" mode="aspectFill"></image>
 				<view class="no-title">你还没有好友呢~</view>
 				<view class="search-btn" @tap="toSearch">搜索好友</view>
 			</view>
-			<view class="friends" v-if="friendsData.length > 0"  @tap='toChatRomm'>
-				<view class="friends-list" v-for="item in friendsData" :key="item.id">
+			<view class="friends" v-if="friendsData.length > 0">
+				<view class="friends-list" v-for="(item,index) in friendsData" :key="index"  @tap='toChatRomm(item)'>
 					<view class="friends-list-l">
 						<text class="tips" v-if="item.tips>0">{{ item.tips }}</text>
 						<image :src="item.imgUrl"></image>
@@ -78,7 +78,7 @@
 				requestTime: '', // 最后申请时间
 				messageTypesMap: {
 					1: '[图片]',
-					2: '[音频]',
+					2: '[语音]',
 					3: '[位置]',
 				} ,// 消息类型判断
 				refresh:false,  // 下拉刷新状态
@@ -93,6 +93,8 @@
 			this.getFriendsList()
 			this.firendApply()
 			uni.startPullDownRefresh();
+			this.socketJoin(this.uID)
+			this.receiveSocketMessage()
 		},
 		computed: {
 
@@ -115,7 +117,7 @@
 					if (value) {
 						// console.log(value);
 						this.uID = value.id
-						this.imgUrl = this.serverUrl + '/user/' + value.imgUrl
+						this.imgUrl = this.serverUrl  + value.imgUrl
 						this.token = value.token
 						this.myName = value.name
 					} else {
@@ -167,7 +169,7 @@
 							}
 							if (result.length > 0) {
 								for (let i = 0; i < result.length; i++) {
-									result[i].imgUrl = this.serverUrl + '/user/' + result[i].imgUrl
+									result[i].imgUrl = this.serverUrl  + result[i].imgUrl
 									if(result[i].markName){
 										result[i].name = result[i].markName
 									}
@@ -215,7 +217,7 @@
 							let result = data.data.result
 							if (result.length > 0) {
 								for (let i = 0; i < result.length; i++) {
-									result[i].imgUrl = this.serverUrl + '/user/' + result[i].imgUrl
+									result[i].imgUrl = this.serverUrl  + result[i].imgUrl
 									this.friendsData.push(result[i])
 								}
 							}
@@ -277,7 +279,6 @@
 			
 			// 获取好友消息未读数
 			getUnReadMessage:function(arr,i){
-				console.log(arr)
 				uni.request({
 					url: this.serverUrl + "/index/unReadMessage",
 					data: {
@@ -354,15 +355,49 @@
 					}
 				})
 			},
-			
+			// socket模块
+			// 用户登录socket注册
+			socketJoin:function(uID){
+				this.socket.emit('login',uID)
+			},
+			// socket 聊天数据接收
+			receiveSocketMessage:function(){
+				this.socket.on('message',(msg,fromID)=>{
+					console.log(msg)
+					let indexMessage = ''
+					if(msg.messageTypes == 0){
+						indexMessage = msg.message
+					}
+					if (msg.messageTypes != 0) {
+						// 如果是 图片，音频 ，地图 就给相应的 字符串
+						indexMessage = this.messageTypesMap[msg.messageTypes]
+					}
+					
+					// 对比到对应项， 修改
+					for(let i = 0;i<this.friendsData.length;i++){
+						if(this.friendsData[i].id == fromID){
+							let item = this.friendsData[i]
+							item.tips++  // 未读消息数
+							// 更新时间
+							item.lastTime = new Date()
+							item.message = indexMessage
+							// 删除原来的消息
+							this.friendsData.splice(i,1)
+							// 把新消息插入到最顶部
+							this.friendsData.unshift(item)
+						}
+					}
+					
+				})
+			},
 			toFriendRequest: function() {
 				uni.navigateTo({
 					url: '../friendRequest/friendRequest'
 				});
 			},
-			toChatRomm:function(){
+			toChatRomm:function(data){
 				uni.navigateTo({
-					url: '../chatRoom/chatRoom'
+					url: `../chatRoom/chatRoom?id=${data.id}&name=${data.name}&img=${data.imgUrl}&type=${data.type}`
 				});
 			},
 
@@ -542,10 +577,10 @@
 
 					.news {
 						display: -webkit-box;
-						min-width: 580rpx;
 						-webkit-box-orient: vertical;
 						-webkit-line-clamp: 1;
 						overflow: hidden;
+							min-width: 580rpx;
 						font-size: $uni-font-size-base;
 						color: $uni-text-color-grey;
 						// padding-top: 10rpx;

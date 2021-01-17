@@ -93,7 +93,7 @@ export default {
 				},
 				types: 3, // 内容类型 （0文字，1图片链接，2音频链接，3位置链接）
 				time: new Date() - 500, // 发送时间
-				tip: 18
+				tip: 0
 			},
 			{
 				id: 'a', //用户id
@@ -117,7 +117,7 @@ export default {
 				},
 				types: 2, // 内容类型 （0文字，1图片链接，2音频链接，3位置链接）
 				time: new Date() - 700, // 发送时间
-				tip: 15
+				tip: 2
 			
 			},
 			{
@@ -129,7 +129,7 @@ export default {
 				},
 				types: 2, // 内容类型 （0文字，1图片链接，2音频链接，3位置链接）
 				time: new Date() - 800, // 发送时间
-				tip: 17
+				tip: 3
 			
 			},
 			{
@@ -138,7 +138,7 @@ export default {
 				message: '拜拜~~~',
 				types: 0, // 内容类型 （0文字，1图片链接，2音频链接，3位置链接）
 				time: new Date() - 1000, // 发送时间
-				tip: 0
+				tip: 4
 
 			},
 			{
@@ -147,7 +147,7 @@ export default {
 				message: '拜拜~',
 				types: 0, // 内容类型 （0文字，1图片链接，2音频链接，3位置链接）
 				time: new Date() - 1000 * 5, // 发送时间
-				tip: 2
+				tip: 5
 
 			},
 			{
@@ -156,7 +156,7 @@ export default {
 				message: '嗯嗯，你去把',
 				types: 0, // 内容类型 （0文字，1图片链接，2音频链接，3位置链接）
 				time: new Date() - 1000 * 16, // 发送时间
-				tip: 1
+				tip: 6
 
 			},
 			{
@@ -165,7 +165,7 @@ export default {
 				message: '我去吃饭了，有空再聊',
 				types: 0, // 内容类型 （0文字，1图片链接，2音频链接，3位置链接）
 				time: new Date() - 1000 * 60, // 发送时间
-				tip: 2
+				tip: 7
 
 			},
 			{
@@ -174,7 +174,7 @@ export default {
 				message: '厉害啊，',
 				types: 0, // 内容类型 （0文字，1图片链接，2音频链接，3位置链接）
 				time: new Date() - 1000 * 60 * 36, // 发送时间
-				tip: 3
+				tip: 8
 
 			},
 			{
@@ -183,7 +183,7 @@ export default {
 				message: 'eight.jpeg',
 				types: 1, // 内容类型 （0文字，1图片链接，2音频链接，3位置链接）
 				time: new Date() - 1000 * 60 * 40, // 发送时间
-				tip: 4
+				tip: 9
 
 			},
 			{
@@ -192,7 +192,7 @@ export default {
 				message: 'three.jpeg',
 				types: 1, // 内容类型 （0文字，1图片链接，2音频链接，3位置链接）
 				time: new Date() - 1000 * 57, // 发送时间
-				tip: 5
+				tip: 10
 
 			},
 			{
@@ -201,7 +201,7 @@ export default {
 				message: '瞧瞧我在做什么，嘻嘻',
 				types: 0, // 内容类型 （0文字，1图片链接，2音频链接，3位置链接）
 				time: new Date() - 1000 * 57 * 20, // 发送时间
-				tip: 5
+				tip:11
 
 			},
 			{
@@ -210,7 +210,7 @@ export default {
 				message: '01.png',
 				types: 1, // 内容类型 （0文字，1图片链接，2音频链接，3位置链接）
 				time: new Date() - 1000 * 60 * 40, // 发送时间
-				tip: 4
+				tip: 12
 			
 			},
 			{
@@ -219,7 +219,7 @@ export default {
 				message: '02.jpg',
 				types: 1, // 内容类型 （0文字，1图片链接，2音频链接，3位置链接）
 				time: new Date() - 1000 * 57 * 50, // 发送时间
-				tip: 5
+				tip: 13
 			
 			},
 			{
@@ -228,7 +228,7 @@ export default {
 				message: '很好啊，',
 				types: 0, // 内容类型 （0文字，1图片链接，2音频链接，3位置链接）
 				time: new Date() - 1000 * 57 * 60*2, // 发送时间
-				tip: 5
+				tip: 14
 
 			},
 			{
@@ -237,7 +237,7 @@ export default {
 				message: '最近还好吗？',
 				types: 0, // 内容类型 （0文字，1图片链接，2音频链接，3位置链接）
 				time: new Date() - 1000 * 60 * 57 * 60 * 10, // 发送时间
-				tip: 4
+				tip: 15
 
 			},
 			{
@@ -246,7 +246,7 @@ export default {
 				message: '哦哦，原来是你啊',
 				types: 0, // 内容类型 （0文字，1图片链接，2音频链接，3位置链接）
 				time: new Date() - 1000 * 57 * 60 * 20, // 发送时间
-				tip: 5
+				tip: 16
 
 			},
 			{
@@ -255,7 +255,7 @@ export default {
 				message: 'one.jpeg',
 				types: 1, // 内容类型 （0文字，1图片链接，2音频链接，3位置链接）
 				time: new Date() - 1000 * 60 * 57 * 60 * 30, // 发送时间
-				tip: 4
+				tip: 17
 
 			},
 			{
@@ -264,7 +264,7 @@ export default {
 				message: '我是都帝啊，给你看看我的照片',
 				types: 0, // 内容类型 （0文字，1图片链接，2音频链接，3位置链接）
 				time: new Date() - 1000 * 60 * 57 * 60 * 40, // 发送时间
-				tip: 3
+				tip: 18
 
 			},
 			{
@@ -273,7 +273,7 @@ export default {
 				message: '你是？',
 				types: 0, // 内容类型 （0文字，1图片链接，2音频链接，3位置链接）
 				time: new Date() - 1000 * 60 * 57 * 60 * 50, // 发送时间
-				tip: 5
+				tip: 19
 
 			},
 			{
@@ -282,7 +282,7 @@ export default {
 				message: 'hello，在吗',
 				types: 0, // 内容类型 （0文字，1图片链接，2音频链接，3位置链接）
 				time: new Date() - 1000 * 60 * 57 * 60 * 60 , // 发送时间
-				tip: 3
+				tip: 20
 
 			},
 

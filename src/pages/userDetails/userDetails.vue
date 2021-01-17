@@ -256,7 +256,7 @@
 						if (status === 200) {
 							let result = data.data.result
 							// 处理头像链接
-							this.cropFilePath = this.serverUrl + '/user/' + result.imgUrl
+							this.cropFilePath = this.serverUrl + result.imgUrl
 							// 处理简介
 							if(result.explain === undefined){
 								result.explain = '这个人很懒，什么都没有留下...'

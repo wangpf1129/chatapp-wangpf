@@ -205,17 +205,6 @@
 				}
 
 			},
-			// 发送内容及类型
-			sendContent: function(message, type) {
-				let data = {
-					message,
-					type,
-				}
-				this.$emit('getInputContent', data)
-				setTimeout(() => {
-					this.inputContent = ''
-				}, 10)
-			},
 			// 点击切换显示更多功能
 			toggleOptions: function() {
 				this.isOptions = !this.isOptions
@@ -253,14 +242,29 @@
 							latitude:res.latitude,
 							longitude:res.longitude
 						}
-						       console.log('位置名称：' + res.name);
-						        console.log('详细地址：' + res.address);
-						        console.log('纬度：' + res.latitude);
-						        console.log('经度：' + res.longitude);
-						this.sendContent(data,3)
+					   // console.log('位置名称：' + res.name);
+					   // console.log('详细地址：' + res.address);
+					   // console.log('纬度：' + res.latitude);
+					   // console.log('经度：' + res.longitude);
+					   // 由于地图消息data为JSON数据，而我们数据库存的消息是String
+					   // 需要转换一下
+					   let stringData = JSON.stringify(data)
+					   
+						this.sendContent(stringData,3)
 				    }
 				});
 			}, 
+			// 发送内容及类型
+			sendContent: function(message, messageTypes) {
+				let data = {
+					message,
+					messageTypes,
+				}
+				this.$emit('getInputContent', data)
+				setTimeout(() => {
+					this.inputContent = ''
+				}, 10)
+			},
 
 		}
 	}
