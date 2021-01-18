@@ -11,8 +11,8 @@
 			</view>
 		</view>
 		<view class="main">
-			<view class="search-user">
-				<view class="title" v-show="userArr.length > 0">用户</view>
+			<view class="search-user" v-show="userArr.length > 0">
+				<view class="title" >用户</view>
 				<view class="list" v-for="(item,index) in userArr" :key="index">
 					<navigator :url="'../userProfile/userProfile?id='+item._id">
 						<image :src="item.imgUrl"></image>
@@ -27,7 +27,7 @@
 					<view class="right-btn send" v-if="item.friendType === 1">发消息</view>
 				</view>
 			</view>
-			<view class="search-user">
+			<view class="search-user" v-show="groupArr.length > 0">
 				<view class="title">群组</view>
 				<view class="list">
 					<image src="~@/static/images/test/four.jpeg"></image>
@@ -59,6 +59,7 @@
 		data() {
 			return {
 				userArr: [],
+				groupArr:[],
 				searchval: '',
 				uID: '',
 				token: '',

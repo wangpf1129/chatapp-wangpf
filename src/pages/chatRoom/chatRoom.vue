@@ -5,8 +5,15 @@
 				<image src="~@/static/images/common/back.png" mode=""></image>
 			</view>
 			<view slot="mid">{{fName}}</view>
-			<view slot="right" class="right" >
+	   <!-- <view slot="right" class="right" v-if="type == 0">
 				<navigator :url="`../userProfile/userProfile?id=${fID}`">
+				<view class="close">
+					<image :src="fImgUrl" mode=""></image>
+				</view>
+				</navigator>
+			</view> -->
+			<view slot="right" class="right" v-if="type == 0">
+				<navigator :url="`../groupHome/groupHome?gID=${fID}&gImgUrl=${fImgUrl}`">
 				<view class="close">
 					<image :src="fImgUrl" mode=""></image>
 				</view>
@@ -34,7 +41,7 @@
 							</view>
 							<!-- 音频 -->
 							<view class="message" v-if="item.messageTypes == 2">
-								<view class="msg-text voice" :style="{width:item.message.time*4 + 'px'}" @tap="playVoice(item.message.voice)">
+								<view class="msg-text voice" :style="{width:item.message.time*4 + 'px'}" @tap="playVoice(item.message)">
 									<image src="../../static/images/chatRoom/voice.png" class="voice-img"></image>
 									{{item.message.time}}″
 								</view>
@@ -64,7 +71,7 @@
 							</view>
 							<!-- 音频 -->
 							<view class="message" v-if="item.messageTypes == 2">
-								<view class="msg-text voice" :style="{width:item.message.time*4 + 'px'}" @tap="playVoice(item.message.voice)">
+								<view class="msg-text voice" :style="{width:item.message.time*4 + 'px'}" @tap="playVoice(item.message)">
 									{{item.message.time}}″
 									<image src="../../static/images/chatRoom/voice.png" class="voice-img"></image>
 								</view>
@@ -241,9 +248,9 @@
 									}
 									// 地图数据类型转换
 									// JSON字符串还原
-									if(msg[i].messageTypes == 3){
+									if(msg[i].messageTypes == 3 ){
 										msg[i].message = JSON.parse(msg[i].message)
-									}
+									}								
 									//this.messages.unshift(msg[i])
 								}
 								this.messages = msg.concat(this.messages)
@@ -272,6 +279,7 @@
 							this.isLoading = true
 							// 开启加载
 							this.beginLoading = true
+							
 						} else if (status === 500) {
 							uni.showToast({
 								title: '服务器出错了！',
@@ -339,6 +347,7 @@
 			},
 			// 播放录音
 			playVoice: function(e) {
+				console.log(e)
 				const innerAudioContext = uni.createInnerAudioContext();
 				innerAudioContext.autoplay = true;
 				innerAudioContext.src = e;
@@ -409,6 +418,7 @@
 				}
 				// 提交音频
 				if (e.messageTypes === 2) {
+					console.log(e)
 					this.judgeMessageTypes(e,e.message.voice)
 				}
 				

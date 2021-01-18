@@ -141,7 +141,7 @@
 							voice:res.tempFilePath,
 							time:this.voiceLength
 						}
-						if(!this.isShowVoiceBg){
+						if(!this.isShowVoiceBg){	
 							this.sendContent(data,2)
 						}
 						// 时长归为
@@ -178,6 +178,7 @@
 			// 获取输入内容并发送
 			getInputContent: function(e) {
 				let chatContent = e.detail.value
+				
 				let pos = chatContent.indexOf('\n')
 				if (pos !== -1 && chatContent.length > 1) {
 					this.sendContent(this.inputContent, 0)
@@ -249,8 +250,7 @@
 					   // 由于地图消息data为JSON数据，而我们数据库存的消息是String
 					   // 需要转换一下
 					   let stringData = JSON.stringify(data)
-					   
-						this.sendContent(stringData,3)
+					   this.sendContent(stringData,3)
 				    }
 				});
 			}, 

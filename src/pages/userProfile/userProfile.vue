@@ -139,7 +139,7 @@
 						}
 						this.genderJudeg(result.gender)
 						this.user = result
-						console.log(this.user)
+						// console.log(this.user)
 					} else if (status === 500) {
 						uni.showToast({
 							title: '服务器出错了！',

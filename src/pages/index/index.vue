@@ -4,14 +4,14 @@
 			<navigator :url="`../userProfile/userProfile?id=${uID}`" slot="left" class="left">
 				<image :src="imgUrl"></image>
 			</navigator>
-			<view slot="mid" class="mid">
+			<view slot="mid" class="mid"> 
 				<image src="~@/static/images/index/火@2x.png"></image>
 			</view>
 			<view slot="right" class="right">
 				<view class="search" @tap="toSearch">
 					<image src="~@/static/images/index/search@2x.png"></image>
 				</view>
-				<view class="add">
+				<view class="add" @tap="toBulidGroup">
 					<image src="~@/static/images/index/add group@2x.png"></image>
 				</view>
 			</view>
@@ -139,10 +139,10 @@
 					url: '../search/search'
 				});
 			},
-			// 去用户信息页面
-			toUserProfile: function() {
+			// 去 建群页面
+			toBulidGroup:function(){
 				uni.navigateTo({
-					url: '../userProfile/userProfile'
+					url: '../buildGroup/buildGroup'
 				});
 			},
 
@@ -363,7 +363,6 @@
 			// socket 聊天数据接收
 			receiveSocketMessage:function(){
 				this.socket.on('message',(msg,fromID)=>{
-					console.log(msg)
 					let indexMessage = ''
 					if(msg.messageTypes == 0){
 						indexMessage = msg.message
@@ -580,7 +579,7 @@
 						-webkit-box-orient: vertical;
 						-webkit-line-clamp: 1;
 						overflow: hidden;
-							min-width: 580rpx;
+						min-width: 580rpx;
 						font-size: $uni-font-size-base;
 						color: $uni-text-color-grey;
 						// padding-top: 10rpx;

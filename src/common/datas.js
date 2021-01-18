@@ -6,7 +6,7 @@ export default {
 				id: 1,
 				tips: 1,
 				imgUrl: 'one.jpeg',
-				name: '张三',
+				name: '张三摩的司机',
 				email: 'zhangsan@163.com',
 				time: new Date(),
 				news: '布会上，喀什地区疾病预防控制中心副主任王希江通报，24'
