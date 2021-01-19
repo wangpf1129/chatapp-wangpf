@@ -93,7 +93,6 @@
 					},
 					method: 'POST',
 					success: (data) => {
-						// console.log(data)
 						let status = data.data.status
 						// 访问后端成功
 						if (status === 200) {
@@ -103,7 +102,6 @@
 								this.friendLeaveMessage(result,i)
 							}
 							this.requestData = result
-							console.log(this.requestData )
 						} else if (status === 500) {
 							uni.showToast({
 								title: '服务器出错了！',
@@ -118,7 +116,7 @@
 							}
 					}
 				})
-			},
+			},  
 			// 获取好友请求内容
 			friendLeaveMessage:function(arr,i){
 				uni.request({
@@ -130,7 +128,7 @@
 					},
 					method: 'POST',
 					success: (data) => {
-						// console.log(data)
+						console.log(data)
 						let status = data.data.status
 						// 访问后端成功
 						if (status === 200) {

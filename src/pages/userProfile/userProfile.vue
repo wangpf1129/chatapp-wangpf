@@ -30,7 +30,7 @@
 		</view>
 
 		<bottom-bar v-if="relation !== 0">
-			<view slot="text" @tap="addFriendAnimation(myName+' 请求添加好友！')" v-if="relation === 2">加为好友</view>
+			<view slot="text" @tap="addFriendAnimation(' 请求添加好友！')" v-if="relation === 2">加为好友</view>
 			<view slot="text" v-if="relation === 1" @tap="toChatRomm">发消息</view>
 		</bottom-bar>
 

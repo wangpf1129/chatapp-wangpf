@@ -467,7 +467,7 @@
 								})
 								// 用户需要重新登录
 								uni.navigateTo({
-									url: '../login/login?cgpwd=' + this.myName
+									url: '../login/login'
 								})
 							}
 						} else if (status === 400) {
@@ -495,6 +495,7 @@
 				  }).exec()
 				},
 			// 弹出 修改框
+		
 			modifyfBox:function(type,typeChinese,data){
 				this.type = type
 				this.modifyTitle = typeChinese
@@ -537,6 +538,7 @@
 				// 访问成功后关闭弹出框
 				this.modifyfBox()
 			},
+			
 			updateFriendName:function(){
 				if(this.modifyData.length > 0 && this.modifyData !== this.oldData){
 					uni.request({

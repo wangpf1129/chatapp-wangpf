@@ -215,8 +215,8 @@ export default {
 						arr[j - 1] = temp
 					}
 				}
-				return arr
 			}
+			return arr
 		} else if (tip == 1) {
 			for (let i = 1; i < arr.length; i++) {
 				for (let j = i; j > 0; j--) {

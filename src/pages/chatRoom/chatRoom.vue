@@ -5,14 +5,14 @@
 				<image src="~@/static/images/common/back.png" mode=""></image>
 			</view>
 			<view slot="mid">{{fName}}</view>
-	   <!-- <view slot="right" class="right" v-if="type == 0">
+			<view slot="right" class="right" v-if="type == 0">
 				<navigator :url="`../userProfile/userProfile?id=${fID}`">
 				<view class="close">
 					<image :src="fImgUrl" mode=""></image>
 				</view>
 				</navigator>
-			</view> -->
-			<view slot="right" class="right" v-if="type == 0">
+			</view>
+			<view slot="right" class="right" v-if="type == 1">
 				<navigator :url="`../groupHome/groupHome?gID=${fID}&gImgUrl=${fImgUrl}`">
 				<view class="close">
 					<image :src="fImgUrl" mode=""></image>
