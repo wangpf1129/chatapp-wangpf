@@ -97,6 +97,7 @@
 			uni.startPullDownRefresh();
 			this.socketJoin(this.uID)
 			this.receiveSocketMessage()
+			this.groupSocket();
 		},
 		computed: {
 
@@ -121,7 +122,7 @@
 						this.uID = value.id
 						this.imgUrl = this.serverUrl + value.imgUrl
 						this.token = value.token
-						this.myName = value.name
+						this.myName = value.userName
 					} else {
 						// 如果没有用户缓存，则跳转到登陆页面
 						uni.navigateTo({
@@ -164,6 +165,7 @@
 						// 访问后端成功
 						if (status === 200) {
 							this.refresh = true
+							// result 为 好友的信息
 							let result = data.data.result
 							this.noone = false
 							if (result.length === 0) {
@@ -177,15 +179,13 @@
 									}
 									this.friendsData.push(result[i])
 								}
-								this.friendAndGroupSort(this.groupsData) 
+								this.friendAndGroupSort(this.friendsData) 
 								//获取好友内消息
 								// for (let i = 0; i < result.length; i++) {
 								// 	this.getFriendLastMessage(this.friendsData, i)
 								// 	this.getUnReadMessage(this.friendsData, i)
 								// }
 							}
-							// 群列表
-							// this.getGroupList()
 						} else if (status === 500) {
 							uni.showToast({
 								title: '服务器出错了！',
@@ -215,15 +215,16 @@
 						let status = data.data.status
 						// 访问后端成功
 						if (status === 200) {
+							// result 为 群的信息
 							let result = data.data.result
 							if (result.length > 0) {
 								for (let i = 0; i < result.length; i++) {
 									result[i].imgUrl = this.serverUrl + result[i].imgUrl
 									this.groupsData.push(result[i])
+									this.socket.emit('group',result[i].id) 
 								}
 							}
-								this.friendAndGroupSort(this.friendsData)
-							// console.log('群',this.groupsData)
+							this.friendAndGroupSort(this.groupsData)
 						} else if (status === 500) {
 							uni.showToast({
 								title: '服务器出错了！',
@@ -349,7 +350,6 @@
 								// 	}
 								// }
 							}
-							console.log(result)
 						} else if (status === 500) {
 							uni.showToast({
 								title: '服务器出错了！',
@@ -372,7 +372,7 @@
 			socketJoin: function(uID) {
 				this.socket.emit('login', uID)
 			},
-			// socket 聊天数据接收
+			// socket 聊天数据接收  用户一对一消息发送
 			receiveSocketMessage: function() {
 				this.socket.on('message', (msg, fromID) => {
 					let indexMessage = ''
@@ -401,6 +401,35 @@
 
 				})
 			},
+			groupSocket:function(){
+				this.socket.on('groupMessage',(msg,groupID,name)=>{
+					// console.log(groupID,name,this.myName)
+					let indexMessage = ''
+					if (msg.messageTypes == 0) {
+						indexMessage = msg.message
+					}
+					if (msg.messageTypes != 0) {
+						// 如果是 图片，音频 ，地图 就给相应的 字符串
+						indexMessage = this.messageTypesMap[msg.messageTypes]
+					}
+					
+					// 对比到对应项， 修改
+					for (let i = 0; i < this.groupsData.length; i++) {
+						if (this.groupsData[i].id == groupID) {
+							let item = this.groupsData[i]
+							item.tips++ // 未读消息数
+							// 更新时间
+							item.lastTime = new Date()
+							item.message = name + " : "+ indexMessage
+							// 删除原来的消息
+							this.groupsData.splice(i, 1)
+							// 把新消息插入到最顶部
+							this.groupsData.unshift(item)
+						}
+					}
+					
+				})
+			},
 			toFriendRequest: function() {
 				uni.navigateTo({
 					url: '../friendRequest/friendRequest'
@@ -420,7 +449,33 @@
 						let status = data.data.status
 						// 访问后端成功
 						if (status === 200) {
-							console.log('消息已读')
+						} else if (status === 500) {
+							uni.showToast({
+								title: '服务器出错了！',
+								icon: 'none',
+								duration: 1500
+							})
+						} else if (status === 300) {
+							// token 过期了 需要重新登录再次生成token
+							uni.navigateTo({
+								url: '../login/login?name=' + this.myName
+							});
+						}
+					}
+				})
+			},
+			readedGroupMessage:function(gID){
+				uni.request({
+					url: this.serverUrl + "/index/updateGroupMessage",
+					data: {
+						gID:gID,
+						token: this.token,
+					},
+					method: 'POST',
+					success: (data) => {
+						let status = data.data.status
+						// 访问后端成功
+						if (status === 200) {
 						} else if (status === 500) {
 							uni.showToast({
 								title: '服务器出错了！',
@@ -437,10 +492,12 @@
 				})
 			},
 			toChatRomm: function(data) {
+				// console.log('进入')
 				// console.log(data)
 				// console.log(this.uID)
 				// // data.tips = 0
 				this.readedFriendMessage(data.id,this.uID)
+				this.readedGroupMessage(data.id)
 				uni.navigateTo({
 					url: `../chatRoom/chatRoom?id=${data.id}&name=${data.name}&img=${data.imgUrl}&type=${data.type}`
 				});

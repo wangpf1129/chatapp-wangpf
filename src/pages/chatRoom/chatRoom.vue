@@ -140,8 +140,10 @@
 			this.type = e.type
 			this.getStorages()
 			this.getMessage()
+			this.getGroupMessage()
 			//this.loadingNextPage()
 			this.receiveSocketMessage()
+			this.receiveSocketGroupMessage()
 		},
 		methods: {
 			// 获取缓存信息
@@ -153,7 +155,7 @@
 						this.uID = value.id
 						this.uImgUrl = this.serverUrl + value.imgUrl
 						this.token = value.token
-						this.uName = value.name
+						this.uName = value.userName
 					} else {
 						// 如果没有用户缓存，则跳转到登陆页面
 						uni.navigateTo({
@@ -195,7 +197,8 @@
 						i++;
 						//获取聊天数据
 						if (i > 20) {
-							this.getMessage(this.nowPage)
+							this.getMessage()
+							this.getGroupMessage()
 						}
 					}.bind(this), 100)
 				}
@@ -272,7 +275,9 @@
 							// 页数+1
 							this.$nextTick(function() {
 								this.isScroll = false
-								this.srcollToView = 'message' + this.messages[msg.length - 1].id
+								if(this.messages[msg.length - 1] !== undefined){
+									this.srcollToView = 'message' + this.messages[msg.length - 1].id
+								}
 							})
 							clearInterval(this.loading)
 							// 隐藏loading图标
@@ -295,55 +300,102 @@
 					}
 				})
 			},
-			// 聊天数据
-			getMessage1: function(page) {
-				let msg = datas.message()
-				let maxPages = msg.length
-				if (msg.length > (page + 1) * 10) {
-					maxPages = (page + 1) * 10
-					// 页码加一
-					this.nowPage++
-				} else {
-					// 数据全部获取完毕
-					this.nowPage = -1000
-					uni.showToast({
-						title: '已经拖到顶部啦~',
-						icon: 'none',
-						duration: 1500
-					})
-					console.log('已经拖到顶部啦~')
-				}
-				// 处理头像链接 
-				// 在这里定义 i,是为了下边获取定位聊天位置的
-				for (var i = page * 10; i < maxPages; i++) {
-					// 处理头像地址 
-					msg[i].imgUrl = '../../static/images/test/' + msg[i].imgUrl
-					// 处理时间间隔
-					if (i < msg.length - 1) {
-						let interval = myfun.spaceTime(this.oldTime, msg[i].time)
-						if (interval) {
-							this.oldTime = interval
+			getGroupMessage: function() {
+				// this.fID 是群ID， this.uID 是自己登录的号的ID
+				uni.request({
+					url: this.serverUrl + "/chat/getPageGroupMessage",
+					data: {
+						gID: this.fID,
+						uID: this.uID,
+						nowPage: this.nowPage,
+						pageSize: this.pageSize,
+						token: this.token
+					},
+					method: 'POST',
+					success: (data) => {
+						let status = data.data.status
+						// 访问后端成功
+						if (status === 200) {
+							let msg = data.data.result
+							//将消息倒序
+							msg.reverse()
+							if (msg.length > 0) {
+								let oldTime = msg[0].sendTime
+								let imgArr = []
+								// 处理头像链接
+								// 在这里定义 i,是为了下边获取定位聊天位置的
+								for (var i = 1; i < msg.length; i++) {
+									// 处理头像地址 
+									msg[i].imgUrl = this.serverUrl + msg[i].imgUrl
+									// 处理时间间隔
+									if (i < msg.length - 1) {
+										let interval = myfun.spaceTime(oldTime, msg[i].sendTime)
+										if (interval) {
+											oldTime = interval
+										}
+										msg[i].sendTime = interval
+									}
+									// 匹配最大时间
+									if (this.nowPage == 0) {
+										if (msg[i].sendTime > this.oldTime) {
+											this.oldTime = msg[i].sendTime
+										}
+									}
+									// 处理图片地址
+									if (msg[i].messageTypes == 1) {
+										msg[i].message = this.serverUrl + msg[i].message
+										imgArr.push(msg[i].message)
+									}
+									// 地图数据类型转换
+									// JSON字符串还原
+									if(msg[i].messageTypes == 3 ){
+										msg[i].message = JSON.parse(msg[i].message)
+									}								
+									//this.messages.unshift(msg[i])
+								}
+								this.messages = msg.concat(this.messages)
+								this.imageMessage = imgArr.concat(this.imageMessage)
+							}
+							if (msg.length == 10) {
+								// 页码加一
+								this.nowPage++
+							} else {
+								// 数据全部获取完毕
+								this.nowPage = -1
+								// uni.showToast({
+								// 	title: '已经拖到顶部啦~',
+								// 	icon: 'none',
+								// 	duration: 1500
+								// })
+								console.log('已经拖到顶部啦~')
+							}
+							// 页数+1
+							this.$nextTick(function() {
+								this.isScroll = false
+								if(this.messages[msg.length - 1] !== undefined){
+									this.srcollToView = 'message' + this.messages[msg.length - 1].id
+								}
+							})
+							clearInterval(this.loading)
+							// 隐藏loading图标
+							this.isLoading = true
+							// 开启加载
+							this.beginLoading = true
+							
+						} else if (status === 500) {
+							uni.showToast({
+								title: '服务器出错了！',
+								icon: 'none',
+								duration: 1500
+							})
+						} else if (status === 300) {
+							// token 过期了 需要重新登录再次生成token
+							uni.navigateTo({
+								url: '../login/login?name=' + this.myName
+							});
 						}
-						msg[i].time = interval
 					}
-					// 处理图片地址
-					if (msg[i].types === 1) {
-						msg[i].message = '../../static/images/test/' + msg[i].message
-						this.imageMessage.unshift(msg[i].message)
-					}
-					this.messages.unshift(msg[i])
-				}
-				// 页数+1
-				this.$nextTick(function() {
-					this.isScroll = false
-					this.srcollToView = 'message' + this.messages[maxPages - page * 10 - 1].tip
 				})
-				clearInterval(this.loading)
-				// 隐藏loading图标
-				this.isLoading = true
-				// 开启加载
-				this.beginLoading = true
-				// console.log(this.messages)
 			},
 			// 播放录音
 			playVoice: function(e) {
@@ -418,7 +470,6 @@
 				}
 				// 提交音频
 				if (e.messageTypes === 2) {
-					console.log(e)
 					this.judgeMessageTypes(e,e.message.voice)
 				}
 				
@@ -451,8 +502,6 @@
 				this.$nextTick(function() {
 					this.srcollToView = 'message' + length
 				})
-
-
 			},
 			
 			// 消息类型封装发送给后端
@@ -521,6 +570,41 @@
 					}
 				})
 			},
+			receiveSocketGroupMessage:function(){
+				this.socket.on('groupMessage',(msg,fromID,name,img)=>{
+					if(fromID === this.fID ){
+						// tip = 0 为自己发的，
+						// 滑动动画
+						this.isScroll = true
+						let length = this.messages.length
+						// 处理时间间隔
+						let nowTime = new Date()
+						let interval = myfun.spaceTime(this.oldTime, nowTime)
+						if (interval) {
+							this.oldTime = interval
+						}
+						nowTime = interval
+						if(msg.messageTypes ==1 || msg.messageTypes==2){
+							msg.message = this.serverUrl + msg.message
+						}
+						let data = {
+							fromID: fromID, // 发送者ID
+							imgUrl: img,
+							message: msg.message,
+							messageTypes: msg.messageTypes, // 内容类型 （0文字，1图片链接，2音频链接，3位置链接）
+							sendTime: nowTime, // 发送时间
+							id: length
+						}
+						this.messages.push(data)
+						if(msg.messageTypes == 1){
+							this.imageMessage.push(msg.message)
+						}
+						this.$nextTick(function() {
+							this.srcollToView = 'message' + length
+						})
+					}
+				})
+			},
 			// 聊天数据发送后端
 			sendSocket: function(e) {
 				if (this.type == 0) {
@@ -529,7 +613,8 @@
 
 				} else {
 					// 群聊
-					this.socket.emit('groupMessage', e, this.uID, this.fID)
+					// console.log(this.uName,this.fName)
+					this.socket.emit('groupMessage', e, this.uID, this.fID,this.uName,this.uImgUrl)
 				}
 			},
 			// 获取输入框高度
@@ -546,7 +631,9 @@
 				this.srcollToView = ''
 				this.$nextTick(function() {
 					let length = this.messages.length - 1
-					this.srcollToView = 'message' + this.messages[length].id
+					if(this.messages[length] !== undefined){
+						this.srcollToView = 'message' + this.messages[length].id
+					}
 				})
 			}
 		}
