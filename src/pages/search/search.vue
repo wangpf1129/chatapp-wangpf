@@ -24,7 +24,7 @@
 					</navigator>
 					<view class="right-btn add" v-if="item.friendType===0" @tap="modifyfBox('添加好友',myName+' 请求添加好友！',item._id)">加好友</view>
 					<view v-if="item.friendType === -1"></view>
-					<view class="right-btn send" v-if="item.friendType === 1">发消息</view>
+					<view class="right-btn send" v-if="item.friendType === 1" @tap="toChatRomm(item._id,item.userName,item.imgUrl,0)">发消息</view>
 				</view>
 			</view>
 			<view class="search-user" v-show="groupArr.length > 0">
@@ -34,7 +34,7 @@
 					<view class="names group-name">
 						<view class="name">讨论群</view>
 					</view>
-					<view class="right-btn send">发送</view>
+					<view class="right-btn send">发消息</view>
 				</view>
 			</view>
 			<view class="modify" :style="{bottom: - + modiyfBoxHeight +'px'}" :animation="animationModifyBox">
@@ -263,6 +263,12 @@
 			}		
 				// 要放在请求后边， 这样才能获得 请求内容
 				this.modifyfBox()			
+			},
+			// 跳转聊天页面
+			toChatRomm:function(id,name,img,type){
+				uni.navigateTo({
+					url: `../chatRoom/chatRoom?id=${id}&name=${name}&img=${img}&type=${type}`
+				});
 			},
 			backOne: function() {
 				uni.navigateBack({

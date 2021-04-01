@@ -139,8 +139,9 @@
 			this.fName = e.name
 			this.type = e.type
 			this.getStorages()
-			this.getMessage()
-			this.getGroupMessage()
+			this.getTypeMessage()
+			// this.getMessage()
+			// this.getGroupMessage()
 			//this.loadingNextPage()
 			this.receiveSocketMessage()
 			this.receiveSocketGroupMessage()
@@ -383,6 +384,7 @@
 							this.beginLoading = true
 							
 						} else if (status === 500) {
+							console.log('这里出错了')
 							uni.showToast({
 								title: '服务器出错了！',
 								icon: 'none',
@@ -406,6 +408,13 @@
 				innerAudioContext.onPlay(() => {
 					console.log('开始播放');
 				});
+			},
+			getTypeMessage:function(){
+				if(this.type == 0){
+					this.getMessage()
+				}else{
+					this.getGroupMessage()
+				}
 			},
 			// 预览图片
 			previewImage: function(e) {
@@ -571,8 +580,8 @@
 				})
 			},
 			receiveSocketGroupMessage:function(){
-				this.socket.on('groupMessage',(msg,fromID,name,img)=>{
-					if(fromID === this.fID ){
+				this.socket.on('groupMessage',(msg,fromID,gID,name,img,tip)=>{
+					if(gID === this.fID && tip == 0 ){
 						// tip = 0 为自己发的，
 						// 滑动动画
 						this.isScroll = true

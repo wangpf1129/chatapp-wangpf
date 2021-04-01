@@ -98,6 +98,7 @@
 			this.socketJoin(this.uID)
 			this.receiveSocketMessage()
 			this.groupSocket();
+			console.log(this.friendsData)
 		},
 		computed: {
 
@@ -208,6 +209,7 @@
 					data: {
 						uID: this.uID,
 						token: this.token,
+						state: 0,
 					},
 					method: 'POST',
 					success: (data) => {
@@ -383,7 +385,7 @@
 						// 如果是 图片，音频 ，地图 就给相应的 字符串
 						indexMessage = this.messageTypesMap[msg.messageTypes]
 					}
-
+					
 					// 对比到对应项， 修改
 					for (let i = 0; i < this.friendsData.length; i++) {
 						if (this.friendsData[i].id == fromID) {
@@ -402,7 +404,7 @@
 				})
 			},
 			groupSocket:function(){
-				this.socket.on('groupMessage',(msg,groupID,name)=>{
+				this.socket.on('groupMessage',(msg,fromID,groupID,name)=>{
 					// console.log(groupID,name,this.myName)
 					let indexMessage = ''
 					if (msg.messageTypes == 0) {
@@ -412,7 +414,6 @@
 						// 如果是 图片，音频 ，地图 就给相应的 字符串
 						indexMessage = this.messageTypesMap[msg.messageTypes]
 					}
-					
 					// 对比到对应项， 修改
 					for (let i = 0; i < this.groupsData.length; i++) {
 						if (this.groupsData[i].id == groupID) {
@@ -420,7 +421,11 @@
 							item.tips++ // 未读消息数
 							// 更新时间
 							item.lastTime = new Date()
-							item.message = name + " : "+ indexMessage
+							if(fromID == this.uID){
+								item.message =  indexMessage
+							}else{
+								item.message = name + " : "+ indexMessage
+							}
 							// 删除原来的消息
 							this.groupsData.splice(i, 1)
 							// 把新消息插入到最顶部
