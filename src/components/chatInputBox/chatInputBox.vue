@@ -37,17 +37,17 @@
 				<image src="../../static/images/chatInput/carmera2.png"></image>
 				<view class="option-list-title">拍摄</view>
 			</view>
-			<view class="option-list">
-				<image src="../../static/images/chatInput/camera.png"></image>
-				<view class="option-list-title">视频通话</view>
-			</view>
 			<view class="option-list" @tap="chooseLocation">
 				<image src="../../static/images/chatInput/position.png"></image>
 				<view class="option-list-title">位置</view>
 			</view>
-			<view class="option-list">
+			<view class="option-list" @tap='noneFun'>
 				<image src="../../static/images/chatInput/file.png"></image>
 				<view class="option-list-title">文件</view>
+			</view>
+			<view class="option-list" @tap='noneFun'>
+				<image src="../../static/images/chatInput/camera.png"></image>
+				<view class="option-list-title">视频通话</view>
 			</view>
 		</view>
 		<view class="voice-bg" :class="{displaynone:isShowVoiceBg}" @touchmove.stop.prevent="moveHandle">
@@ -133,7 +133,6 @@
 			voiceEnd:function(){
 				console.log('结束')
 				clearInterval(this.voiceTimer)
-				
 				try{
 					recorderManager.stop();
 					recorderManager.onStop((res) => {
@@ -231,6 +230,14 @@
 							this.sendContent(filePaths[i], 1)
 						}
 					}
+				});
+			},
+			// 发送文件功能
+			noneFun:function(){
+				uni.showToast({
+				    title: '暂无此功能',
+					icon:'none',
+				    duration: 2000
 				});
 			},
 			// 发送位置

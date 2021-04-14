@@ -16,7 +16,6 @@
 				<view class="list" v-for="(item,index) in userArr" :key="index">
 					<navigator :url="'../userProfile/userProfile?id='+item._id">
 						<image :src="item.imgUrl"></image>
-
 						<view class="names">
 							<view class="name" v-html="item.userName"></view>
 							<view class="email" v-html="item.email"></view>
@@ -172,7 +171,6 @@
 							if (status === 200) {
 								// 是好友
 								friendType = 1
-
 							} else if (status === 400) {
 								// 不是好友
 								friendType = 0

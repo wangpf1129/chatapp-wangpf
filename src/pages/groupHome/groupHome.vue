@@ -12,48 +12,47 @@
 		</top-bar>
 		<view class="bg">
 			<image :src="gImgUrl" class="bg-img" mode="aspectFill"></image>
-			
 		</view>
 		
 		<view class="main">
 			<view class="main-inner">
 				<view class="info"> 
-					<view class="name">开发交流群</view>
-					<view class="time">2021/1/18</view>
-					<view class="notice">公告：欢迎大家来到这个开发交流群，我们可以在这里分析自己的技术，以便促进群里的各位共同进步！</view>
+					<view class="name">{{group.groupName}}</view>
+					<view class="time">{{group.createDate}}</view>
+					<view class="notice">{{group.notice}}</view>
 				</view>
 				<view class="member">
 					<view class="top">
 						<view class="title">群成员</view>
-						<view class="more">管理群成员</view>
+						<!-- <view class="more">管理群成员</view> -->
 						<image src="~@/static/images/group/more1.png" mode="aspectFill" class="more-img"></image>
 					</view>
 					<view class="member-list">
 						<view class="member-li" v-for="(item,index) in groupMember" :key="index">
 							<view class="imgs">
-								<image src="../../static/images/group/delete.png" mode="aspectFill" class="delete"></image>
+								<!-- <image src="../../static/images/group/delete.png" mode="aspectFill" class="delete"></image> -->
 								<image :src="item.imgUrl" mode="aspectFill" class="user-img"></image>
 							</view>
 							<view class="name">{{item.name}}</view>
 						</view>
-						<view class="member-li">
+						<!-- <view class="member-li">
 							<view class="imgs">
 								<image src="../../static/images/group/add.png" mode="aspectFill" class="user-add"></image>
 							</view>
 							<view class="name">邀请</view>
-						</view>
+						</view> -->
 					</view>
 				</view>
 				<view class="groupInfo">
-					<view class="row" @tap="modifyfBox('groupName','群名称','开发交流群')">
+					<view class="row" @tap="modifyfBox('groupName','群名称',group.groupName)">
 						<view class="title">群名称</view>
-						<view class="cont">开发交流群</view>
+						<view class="cont">{{group.groupName}}</view>
 						<view class="more">
 							<image src="~@/static/images/group/more1.png" mode="aspectFill"></image>
 						</view>
 					</view>
 					<view class="row">
-						<view class="title" >群头像</view>
+						<view class="title">群头像</view>
 						<view class="cont">
 							<image-cropper :src="tempFilePath" @confirm="confirm" @cancel="cancel"></image-cropper>
 							<image :src="gImgUrl" @tap="upload" class="group-img" mode="aspectFill"></image>
@@ -62,32 +61,17 @@
 							<image src="~@/static/images/group/more1.png" mode="aspectFill"></image>
 						</view>
 					</view>
-					<view class="row" @tap="modifyfBox('groupNotice','群公告','欢迎大家来到这个开发交流群，我们可以在这里分析自己的技术，以便促进群里的各位共同进步！')">
+					<view class="row" @tap="modifyfBox('notice','群公告',group.notice)">
 						<view class="title">群公告</view>
-						<view class="cont">欢迎大家来到这个开发交流群，我们可以在这里分析自己的技术，以便促进群里的各位共同进步！</view>
+						<view class="cont">{{group.notice}}</view>
 						<view class="more">
 							<image src="~@/static/images/group/more1.png" mode="aspectFill"></image>
 						</view>
 					</view>
-					<view class="row" @tap="modifyfBox('groupInnerName','群内名','王鹏飞')">
-						<view class="title">群内名</view>
-						<view class="cont">王鹏飞</view>
-						<view class="more">
-							<image src="~@/static/images/group/more1.png" mode="aspectFill"></image>
-						</view>
-					</view>
-					<view class="row">
-						<view class="title">消息免打扰</view>
-						<view class="cont"></view>
-						<view class="more">
-							<switch :checked='isSwitch' @change="switchChange" color="rgba(255,228,49,1)" class="switch"/>
-						</view>
-					</view>
-					 
 				</view>
 			</view>
 		</view>
-		<view class="bottomBtn">解散该群</view>
+	<!-- 	<view class="bottomBtn">解散该群</view> -->
 		<view class="modify" :style="{bottom: - + modiyfBoxHeight +'px'}" :animation="animationModifyBox">
 			<view class="modify-header">
 				<div class="close" @tap="modifyfBox(type,modifyTitle,modifyData)">取消</div>
@@ -116,10 +100,11 @@
 		},
 		data() {
 			return {
+				group:{}, // 群信息数据
 				gID:'', // 群ID
 				gImgUrl:'', // 群头像
 				groupMember:[], // 群成员
-				isSwitch:false,  // 消息免打扰开关
+				usersID:[],
 				tempFilePath:"",
 				headimg:"",
 				modifyTitle:'',				//  被修改的标题
@@ -133,7 +118,9 @@
 		onLoad:function(e){
 			this.gID = e.gID
 			this.gImgUrl = e.gImgUrl
-			this.getGroupMember()
+			this.getGroupMemberID()
+			// this.getGroupMember()
+			this.getGroup()
 		},
 		methods: {
 			// 返回上一级页面
@@ -143,18 +130,110 @@
 				});
 			},
 			// 获取群成员
-			getGroupMember:function(){
-				let members = datas.users()
-				for(let i =0 ;i<members.length;i++){
-					members[i].imgUrl = '../../static/images/test/' + 	members[i].imgUrl 
-					this.groupMember.push(members[i])
-				}
-				console.log(this.groupMember)
+			getGroupMemberID:function(){
+				// let members = datas.users()
+				// for(let i =0 ;i<members.length;i++){
+				// 	members[i].imgUrl = '../../static/images/test/' + 	members[i].imgUrl 
+				// 	this.groupMember.push(members[i])
+				// }
+				uni.request({
+					url: this.serverUrl + "/group/groupMemberID",
+					data: {
+						id: this.gID,
+						token:this.token,
+					},
+					method: 'POST',
+					success: (data) => {
+						let status = data.data.status
+						// 访问后端成功
+						if (status === 200) {
+							let result = data.data.result
+							for(let k of result){
+								this.usersID.push(k['userID'])
+							}
+							uni.request({
+								url: this.serverUrl + "/group/groupMember",
+								data: {
+									usersID: this.usersID,
+								},
+								method: 'POST',
+								success: (data) => {
+									let status = data.data.status
+									// 访问后端成功
+									if (status === 200) {
+										let result = data.data.result
+										let users = [];
+										for(let k of result){
+											users.push(k._id)
+										}
+										for(let i = 0;i<this.usersID.length;i++){
+											for(let j =0;j<result.length;j++){
+												if(this.usersID[i] === result[j]._id){
+													result[j].imgUrl = this.serverUrl+ result[j].imgUrl
+													this.groupMember.push(result[j])
+												}
+											}
+										}
+										// console.log(result)
+									} else if (status === 500) {
+										uni.showToast({
+											title: '服务器出错了！',
+											icon: 'none',
+											duration: 1500
+										})
+									}else if(status === 300){
+											// token 过期了 需要重新登录再次生成token
+											uni.navigateTo({
+												url: '../login/login?name=' + this.myName
+											});
+										}
+								}
+							})
+						} else if (status === 500) {
+							uni.showToast({
+								title: '服务器出错了！',
+								icon: 'none',
+								duration: 1500
+							})
+						}else if(status === 300){
+								// token 过期了 需要重新登录再次生成token
+								uni.navigateTo({
+									url: '../login/login?name=' + this.myName
+								});
+							}
+					}
+				})
 			},
-			switchChange: function (e) {
-			          console.log('switch1 发生 change 事件，携带值为', e.target.value)
-			 },
-			 
+			getGroupMember:function(){
+				uni.request({
+					url: this.serverUrl + "/group/groupMember",
+					data: {
+						usersID: this.usersID,
+						token:this.token,
+					},
+					method: 'POST',
+					success: (data) => {
+						let status = data.data.status
+						// 访问后端成功
+						if (status === 200) {
+							let result = data.data.result
+							console.log(data)
+							// console.log(result)
+						} else if (status === 500) {
+							uni.showToast({
+								title: '服务器出错了！',
+								icon: 'none',
+								duration: 1500
+							})
+						}else if(status === 300){
+								// token 过期了 需要重新登录再次生成token
+								uni.navigateTo({
+									url: '../login/login?name=' + this.myName
+								});
+							}
+					}
+				})
+			},
 			 // 头像裁剪
 			 upload:function() {
 			 	uni.chooseImage({
@@ -166,11 +245,31 @@
 			 		},
 			 	});
 			 },
-			 
 			 confirm:function(e) {
-			 	this.tempFilePath = "";
-			 	this.gImgUrl = e.detail.tempFilePath;
-			 	this.headimg = e.detail.tempFilePath;			
+					this.tempFilePath = "";
+					this.headimg = e.detail.tempFilePath;
+					this.gImgUrl = e.detail.tempFilePath;
+					uni.uploadFile({
+						url: this.serverUrl + '/files/upload', //   后端地址上传图片接口地址
+						filePath: this.headimg,
+						name: "file",
+						fileType: "image",
+						formData:{
+							url:'group',
+							name: new Date().getTime() + this.gID,
+							token:this.token
+						},		// 传递参数
+						success: (uploadFileRes) => {
+							let backstr = uploadFileRes.data;
+							console.log(backstr)
+							// 更换头像
+							this.updateGroup(backstr,'imgUrl')
+						},
+
+						fail(e) {
+							console.log("this is errormes " + e.message);
+						},
+					});
 			 },
 			 cancel:function() {
 			 	console.log("canceled");
@@ -181,12 +280,6 @@
 			 	this.modifyTitle = typeChinese
 			 	this.modifyData = data
 			 	this.oldData = data
-			 	if(this.modifyTitle === '密码'){
-			 		this.isOldPwd = true
-			 	}else{
-			 		this.isOldPwd = false
-			 		this.oldPwd = undefined
-			 	}
 			 	this.isModify = !this.isModify
 			 	 // 设置弹出框的动画
 			 	let animationModifyBox = uni.createAnimation({
@@ -205,18 +298,85 @@
 			 modifySure:function(){
 			 	// 做一些操作后在 调用modifyfBox
 			 	if(this.modifyData.length > 0 && this.modifyData !== this.oldData){
-			 		if(this.type === 'markName'){
-			 			this.updateFriendName()
-			 			// 前端替换修改
-			 			this.markName = this.modifyData
-			 		}else{
-			 			this.updateUser(this.modifyData,this.type,this.oldPwd)
-			 			// 前端替换修改
-			 			this.user[this.type] = this.modifyData
-			 		}
+			 		this.updateGroup(this.modifyData,this.type)
+			 		// 前端替换修改
+			 		this.group[this.type] = this.modifyData
 			 	}
 			 	// 访问成功后关闭弹出框
 			 	this.modifyfBox()
+			 },
+			 // 获取用户信息
+			 getGroup :function(){
+			 	uni.request({
+			 		url: this.serverUrl + "/group/detail",
+			 		data: {
+			 			id: this.gID,
+			 			token:this.token,
+			 		},
+			 		method: 'POST',
+			 		success: (data) => {
+			 			let status = data.data.status
+			 			// 访问后端成功
+			 			if (status === 200) {
+			 				let result = data.data.result
+							this.gImgUrl = this.serverUrl + result.imgUrl
+							if(result.createDate){
+								result.createDate = result.createDate.slice(0,10)
+							}
+							
+							this.group = result
+			 			} else if (status === 500) {
+			 				uni.showToast({
+			 					title: '服务器出错了！',
+			 					icon: 'none',
+			 					duration: 1500
+			 				})
+			 			}else if(status === 300){
+			 					// token 过期了 需要重新登录再次生成token
+			 					uni.navigateTo({
+			 						url: '../login/login?name=' + this.myName
+			 					});
+			 				}
+			 		}
+			 	})
+			 },
+			 // 修改用户数据
+			 updateGroup :function(data,type){
+				 console.log(data)
+			 	uni.request({
+			 		url: this.serverUrl + "/group/update",
+			 		data: {
+			 			id:this.gID,
+			 			data: data,  // 修改的内容
+			 			type:type,  // 修改项
+			 			token:this.token
+			 		},
+			 		method: 'POST',
+			 		success: (data) => {
+			 			let status = data.data.status
+			 		
+			 			// 访问后端成功
+			 			if (status === 200) {
+			 				uni.showToast({
+			 					title: '修改成功！',
+			 					icon: 'none',
+			 					duration: 1500
+			 				})
+			 			} else if (status === 400) {
+			 				uni.showModal({
+			 				    title: '密码错误',
+			 				    content: '原始密码错误，请重新输入！',
+			 					showCancel:false
+			 				});
+			 			}else if (status === 500) {
+			 				uni.showToast({
+			 					title: '服务器出错了！',
+			 					icon: 'none',
+			 					duration: 1500
+			 				})
+			 			}
+			 		}
+			 	})
 			 },
 		},
 	}
@@ -235,7 +395,6 @@
 	            height: 100%;
 	        }
 	    }
-	
 	    .right {
 	        height: 48rpx;
 	
@@ -251,8 +410,6 @@
 	        }
 	    }
 	}
-	
-	
 	.bg{
 		width: 100%;
 		height: 100%;
@@ -267,7 +424,6 @@
 			height: 750rpx;
 		}
 	}
-	
 	.main{
 		margin-top: 360rpx;
 	

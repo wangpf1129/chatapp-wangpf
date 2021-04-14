@@ -56,6 +56,21 @@
 					</view>
 				</view>
 			</view>
+			<view class="friends" v-if="groupsData.length > 0">
+				<view class="friends-list" v-for="(item,index) in groupsData" :key="index" @tap='toChatRomm(item)'>
+					<view class="friends-list-l">
+						<text class="tips" v-if="item.tips>0">{{ item.tips }}</text>
+						<image :src="item.imgUrl"></image>
+					</view>
+					<view class="friends-list-r">
+						<view class="top">
+							<view class="name">{{ item.name }}</view>
+							<view class="time">{{ showTime(item.lastTime) }}</view>
+						</view>
+						<view class="news">{{ item.message }}</view>
+					</view>
+				</view>
+			</view>
 		</view>
 	</view>
 </template>
@@ -98,16 +113,14 @@
 			this.socketJoin(this.uID)
 			this.receiveSocketMessage()
 			this.groupSocket();
-			console.log(this.friendsData)
-		},
-		computed: {
-
 		},
 		// 下拉刷新事件
 		onPullDownRefresh() {
 			this.friendsData = []
+			this.groupsData = []
 			this.getStorages()
 			this.getFriendsList()
+			this.getGroupList()
 			this.firendApply()
 			setTimeout(function() {
 				uni.stopPullDownRefresh();
@@ -161,7 +174,6 @@
 					},
 					method: 'POST',
 					success: (data) => {
-						// console.log(data)
 						let status = data.data.status
 						// 访问后端成功
 						if (status === 200) {
@@ -180,12 +192,7 @@
 									}
 									this.friendsData.push(result[i])
 								}
-								this.friendAndGroupSort(this.friendsData) 
-								//获取好友内消息
-								// for (let i = 0; i < result.length; i++) {
-								// 	this.getFriendLastMessage(this.friendsData, i)
-								// 	this.getUnReadMessage(this.friendsData, i)
-								// }
+								// this.friendAndGroupSort(this.friendsData) 
 							}
 						} else if (status === 500) {
 							uni.showToast({
@@ -208,8 +215,8 @@
 					url: this.serverUrl + "/index/getGroupList",
 					data: {
 						uID: this.uID,
-						token: this.token,
 						state: 0,
+						token: this.token,
 					},
 					method: 'POST',
 					success: (data) => {
@@ -226,7 +233,7 @@
 									this.socket.emit('group',result[i].id) 
 								}
 							}
-							this.friendAndGroupSort(this.groupsData)
+							// this.friendAndGroupSort(this.groupsData)
 						} else if (status === 500) {
 							uni.showToast({
 								title: '服务器出错了！',
@@ -385,7 +392,6 @@
 						// 如果是 图片，音频 ，地图 就给相应的 字符串
 						indexMessage = this.messageTypesMap[msg.messageTypes]
 					}
-					
 					// 对比到对应项， 修改
 					for (let i = 0; i < this.friendsData.length; i++) {
 						if (this.friendsData[i].id == fromID) {
@@ -400,7 +406,6 @@
 							this.friendsData.unshift(item)
 						}
 					}
-
 				})
 			},
 			groupSocket:function(){
@@ -432,7 +437,6 @@
 							this.groupsData.unshift(item)
 						}
 					}
-					
 				})
 			},
 			toFriendRequest: function() {
@@ -499,7 +503,7 @@
 			toChatRomm: function(data) {
 				// console.log('进入')
 				// console.log(data)
-				// console.log(this.uID)
+				// console.log(this.uID) // 自己
 				// // data.tips = 0
 				this.readedFriendMessage(data.id,this.uID)
 				this.readedGroupMessage(data.id)

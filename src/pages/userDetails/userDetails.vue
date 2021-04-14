@@ -109,7 +109,7 @@
 					<view class="row" @tap="modifyfBox('phone','电话',user.phone)" v-if="ID === uID">
 						<view class="title">电话</view>
 						<view class="cont">
-							<span>
+							<span>1
 								{{user.phone}}
 							</span>
 						</view>
@@ -395,7 +395,6 @@
 				this.tempFilePath = "";
 				// this.cropFilePath = e.detail.tempFilePath;
 				this.headimg = e.detail.tempFilePath;
-
 				uni.uploadFile({
 					url: this.serverUrl + '/files/upload', //   后端地址上传图片接口地址
 					filePath: this.headimg,

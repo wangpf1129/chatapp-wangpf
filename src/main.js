@@ -5,8 +5,8 @@ import App from './App'
 import io from './common/socket/weapp.socket.io.js'
 
 Vue.config.productionTip = false
-Vue.prototype.serverUrl = 'http://192.168.1.107:3000'
-Vue.prototype.socket = io('http://192.168.1.107:8082') 
+Vue.prototype.serverUrl = 'http://192.168.43.42:3000'
+Vue.prototype.socket = io('http://192.168.43.42:8082') 
 
 App.mpType = 'app' 
 
@@ -14,3 +14,4 @@ const app = new Vue({
 	...App
 })
 app.$mount() 
+ 
